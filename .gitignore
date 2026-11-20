@@ -1,0 +1,29 @@
+# Python & Numba caches
+__pycache__/
+*.py[cod]
+*.nbc
+*.nbi
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# LaTeX build artifacts (keep manuscript/main.tex, references.bib, and figures/*.pdf)
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.log
+manuscript/*.out
+manuscript/*.toc
+manuscript/*.fls
+manuscript/*.fdb_latexmk
+manuscript/*.synctex.gz
+manuscript/*Notes.bib
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lattice-vacancy-crossover"
+version = "1.0.0"
+description = "Reproducible Kawasaki Monte Carlo simulations, statistical analysis, and publication figures for Lattice Topology, Vacancy Clustering, and Transport."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.11",
+    "pandas>=2.0",
+    "numba>=0.58",
+    "matplotlib>=3.8",
+    "tqdm>=4.65",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

@@ -1,0 +1,502 @@
+\documentclass[aps,pre,reprint,superscriptaddress,amsmath,amssymb,floatfix]{revtex4-2}
+
+\usepackage{graphicx}
+\usepackage{dcolumn}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{placeins}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\makeatletter
+\newcommand{\inlinetablecaption}[1]{\def\@captype{table}\caption{#1}}
+\makeatother
+
+\graphicspath{{./}{figures/}{../figures/}}
+
+\begin{document}
+
+\title{Lattice Topology, Vacancy Clustering, and Transport: A Thermodynamic-to-Geometric Crossover in SC, BCC, and FCC Lattices}
+
+\author{Salin Adhikari}
+\email{asalinadhikari@gmail.com}
+\affiliation{Rato Bangala School, Lalitpur, Nepal}
+
+\author{Nilaksh Khetan}
+\email{nilakshkhetan@gmail.com}
+\affiliation{Rato Bangala School, Lalitpur, Nepal}
+
+\date{\today}
+
+\begin{abstract}
+Vacancy-mediated diffusion scales linearly with vacancy concentration in dilute crystals ($D \propto C_v$), but attractive interactions disrupt this scaling through clustering and phase separation. To clarify how thermodynamic demixing, lattice connectivity, and conserved coarsening jointly govern vacancy organization and transport, we compare simple cubic (SC, $Z=6$), body-centered cubic (BCC, $Z=8$), and face-centered cubic (FCC, $Z=12$) lattices under a common attractive lattice-gas Hamiltonian and conserved Kawasaki Metropolis dynamics ($465$ primary $L=20$ trajectories of $6{,}000$ sweeps, dense subcritical spanning sweeps, $L=40$ FCC benchmarks, and exact $3\mathrm{D}$ periodic wrapping diagnostics). In the dilute limit, all lattices recover Bardeen--Herring/Manning transport, with bare $D^{\mathrm{SC}} > D^{\mathrm{BCC}} > D^{\mathrm{FCC}}$ fixed by conventional cubic jump lengths $r_{\mathrm{nn}}^2 \in \{1, 3/4, 1/2\}$ and tracer correlation factors. At matched subcritical temperature ($T/T_c \simeq 0.82$), FCC spans at $C_v^* = 0.2020$ ($1.012\,p_c^{\mathrm{FCC}}$), coinciding with random site percolation ($p_c^{\mathrm{FCC}} = 0.1996$), whereas SC ($0.653\,p_c^{\mathrm{SC}}$) and BCC ($0.925\,p_c^{\mathrm{BCC}}$) span below $p_c$ via thermodynamic aggregation. Heating controls at $C_v = 0.20$ from $T/T_c \simeq 0.82$ to $1.25$ dissolves giant clusters in SC and BCC, whereas FCC retains and expands its spanning network ($f_{\max} = 61.8\%$ to $73.9\%$, $P_{\mathrm{span}} = 1.00$); lowering FCC to $C_v = 0.15 < p_c^{\mathrm{FCC}}$ restores thermal destruction. Between $L=20$ and $L=40$, subcritical FCC $f_{\max}$ drops ($61.8\%$ to $42.0\%$) under Lifshitz--Slyozov--Wagner coarsening, yet local clustering $\mathcal{C}$ and diffusivity $D$ converge to within $0.4\%$. Across all $465$ seeds, $f_{\max}$ fails as a transport predictor ($r = -0.089$), while $\mathcal{C}$ correlates strongly with reduced $D$ ($r = -0.656$, $p < 10^{-57}$). Finally, while $\Lambda = (C_v/p_c)(T_c/T)$ fails to collapse transport ($R^2 = 0.024$), two-parameter scaling yields $D/D_0 = 0.1516\,(C_v/p_c)^{3/4}(T/T_c)$ ($R^2_{\log} = 0.9266$, $R^2_{\mathrm{lin}} = 0.9381$; equally robust under zero-free-parameter analytical normalization, $R^2_{\log} = 0.9407$ free), revealing near-universal scaling with small, statistically resolved residual topology dependence ($F(6,456) = 29.34$, $p = 9.95 \times 10^{-30}$).
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+\label{sec:intro}
+
+Point defects govern mass transport, phase stability, radiation-damage evolution, and high-temperature creep in crystalline solids~\cite{Flynn1972,Manning1968,Allnatt1993}. Lattice vacancies play a central role because atomic self-diffusion proceeds primarily through nearest-neighbor atom--vacancy exchanges. In the dilute limit ($C_v \ll 1$), classical kinetic theory developed by Bardeen and Herring~\cite{Bardeen1952}, Compaan and Haven~\cite{Compaan1956}, and Manning~\cite{Manning1968} establishes an exact proportionality between the tracer diffusivity $D$ and the vacancy fraction $C_v$, moderated by a geometric tracer correlation factor $f_0$ that captures enhanced immediate return jumps into the site just vacated. Under thermal activation, this dilute transport obeys the familiar Arrhenius law,
+\begin{equation}
+  D = D_A \exp\!\left(-\frac{Q}{k_B T}\right),
+  \label{eq:arrhenius}
+\end{equation}
+where $D_A$ is the Arrhenius prefactor and $Q$ is an effective activation energy.
+
+At elevated defect concentrations---encountered in irradiated alloys, quenched supersaturated crystals, non-stoichiometric oxides, and concentrated lattice gases---vacancies no longer act as independent carriers~\cite{Kehr1989,Allnatt1993}. Effective attractive vacancy--vacancy interactions (equivalent to cohesive atom--atom bonding in a binary lattice gas~\cite{Lee1952,Yeomans1992}) produce short-range clustering above the demixing transition and macroscopic phase separation inside the miscibility gap. Crucially, crystal topology enters through two opposing physical scales as coordination number $Z$ increases from simple cubic (SC, $Z=6$) through body-centered cubic (BCC, $Z=8$) to face-centered cubic (FCC, $Z=12$): the Ising critical temperature $T_c(Z)$ rises monotonically with $Z$~\cite{Ferrenberg2018,Lundow2009}, whereas the random site-percolation threshold $p_c(Z)$ falls monotonically~\cite{Stauffer1994,Lorenz1998,Wang2013}.
+
+Although dilute tracer correlation theory~\cite{Bardeen1952,Compaan1956,Manning1968}, equilibrium Ising criticality~\cite{Lee1952,Binder2001}, correlated percolation~\cite{MullerKrumbhaar1974,Coniglio1980}, and conserved domain coarsening~\cite{Lifshitz1961,Wagner1961,Bray1994} are each well-developed fields, their interplay in conserved vacancy transport~\cite{Kawasaki1966,Kawasaki1972} across three-dimensional crystal topologies remains incompletely characterized. Three specific questions motivate the present study:
+\begin{enumerate}
+  \item When system-spanning vacancy networks form at elevated $C_v$, where in $(T, C_v, Z)$ space is connectivity driven by thermodynamic demixing versus stabilized by lattice percolation geometry?
+  \item Does global cluster connectivity ($f_{\max}$) or local defect coordination ($\mathcal{C}$) govern diffusivity suppression, and are these structure--transport relations universal across SC, BCC, and FCC lattices?
+  \item Can topology-dependent transport curves collapse onto a compact dimensionless scaling law in the natural scales $p_c$ and $T_c$, and how much residual lattice dependence persists?
+\end{enumerate}
+
+To answer these questions, we conduct a deterministic, conserved Kawasaki Monte Carlo study of SC, BCC, and FCC supercells under an identical attractive lattice-gas Hamiltonian. Synthesizing $465$ seed-level trajectories ($6{,}000$ sweeps each), exact periodic topological wrapping diagnostics, matched reduced-temperature controls below and above $T_c$, and $L=40$ finite-size benchmarks, we establish a clear \emph{thermodynamic-to-geometric crossover}. Below $p_c$, attractive thermodynamics drives aggregation that dissolves upon heating above $T_c$; near $p_c^{\mathrm{FCC}}$, high coordination sustains a system-spanning network even in the supercritical regime ($T/T_c = 1.25$). Moreover, while global cluster size $f_{\max}$ depends strongly on finite-time coarsening and fails as a universal transport predictor, tracer diffusivity converges rapidly with system size and obeys an empirical two-parameter scaling law, $D/D_0 \propto (C_v/p_c)^{3/4}(T/T_c)$, with small but statistically resolved residual topology dependence.
+
+\section{Model and Computational Methods}
+\label{sec:methods}
+
+\subsection{Lattice Geometries and Exact Ising Mapping}
+\label{sec:lattice_models}
+
+We simulate periodic SC, BCC, and FCC supercells of $L \times L \times L$ conventional cubic unit cells with lattice parameter $a = 1$. Accounting for their crystallographic bases ($1$, $2$, and $4$ sites per unit cell), the primary $L = 20$ supercells contain $N = 8{,}000$ (SC), $16{,}000$ (BCC), and $32{,}000$ (FCC) sites, while $L = 40$ FCC finite-size controls contain $N = 256{,}000$ sites. In conventional cubic units ($a = 1$), the squared nearest-neighbor jump lengths are $r_{\mathrm{nn}}^2 = 1$ (SC), $3/4$ (BCC), and $1/2$ (FCC).
+
+Each site $i \in \{1,\dots,N\}$ carries an occupation variable $n_i \in \{0,1\}$ ($n_i = 1$ for an atom, $n_i = 0$ for a vacancy) at fixed vacancy concentration $C_v = N^{-1}\sum_i (1 - n_i)$. Configurational interactions are governed by the attractive nearest-neighbor lattice-gas Hamiltonian,
+\begin{equation}
+  E(\{n_i\}) = -J \sum_{\langle i,j \rangle} n_i n_j,
+  \label{eq:hamiltonian}
+\end{equation}
+summed over undirected nearest-neighbor pairs $\langle i,j\rangle$, with reduced units $J = 1$ and $k_B = 1$.
+
+Substituting the Lee--Yang spin transformation $n_i = (1 + s_i)/2$ ($s_i \in \{-1, +1\}$)~\cite{Lee1952,Yeomans1992} maps Eq.~\eqref{eq:hamiltonian} directly onto the ferromagnetic spin-$1/2$ Ising model:
+\begin{align}
+  E &= -J \sum_{\langle i,j \rangle} \frac{(1 + s_i)(1 + s_j)}{4} \nonumber \\
+    &= -\frac{J}{4} \sum_{\langle i,j \rangle} s_i s_j - \frac{ZJ}{4} \sum_{i=1}^N s_i - \frac{ZNJ}{8}.
+  \label{eq:ising_map}
+\end{align}
+Because Kawasaki dynamics conserves total atom number $\sum_i n_i = N(1 - C_v)$, the total spin $\sum_i s_i = N(1 - 2C_v)$ is strictly invariant along every trajectory. The linear and constant terms in Eq.~\eqref{eq:ising_map} therefore drop out of all energy differences, establishing exact canonical equivalence to the conserved-magnetization Ising model with effective coupling
+\begin{equation}
+  J_{\mathrm{Ising}} = \frac{J}{4} = 0.25
+  \label{eq:j_ising}
+\end{equation}
+and reduced magnetization $m = 1 - 2C_v$. The lattice-gas critical temperature accordingly satisfies $T_c^{\mathrm{LG}}/J = (k_B T_c^{\mathrm{Ising}}/J_{\mathrm{Ising}})/4$. Using high-precision three-dimensional Ising benchmarks---$k_B T_c^{\mathrm{Ising}}/J_{\mathrm{Ising}} = 4.511523$ (SC)~\cite{Ferrenberg2018}, $6.35435$ (BCC), and $9.7952$ (FCC)~\cite{Lundow2009}---yields
+\begin{equation}
+  T_c^{\mathrm{SC}} = 1.13, \qquad T_c^{\mathrm{BCC}} = 1.59, \qquad T_c^{\mathrm{FCC}} = 2.45,
+  \label{eq:tc_values}
+\end{equation}
+matching $T_c^{\mathrm{Ising}}/4$ ($1.1279$, $1.5886$, $2.4488$) to three significant figures.
+
+Since our concentrations $C_v \in [0.14, 0.25]$ lie off the critical composition ($m = 1 - 2C_v \in [0.50, 0.72]$), we verify their placement relative to the coexistence binodal $m_{\mathrm{coex}}(T)$. Evaluating the Talapov--Bl\"ote three-dimensional Ising magnetization formula~\cite{Talapov1996} at $T/T_c = 0.82$ gives $m_{\mathrm{coex}} \approx 0.840$, corresponding to a coexistence vacancy fraction $C_v^{\mathrm{coex}} = (1 - m_{\mathrm{coex}})/2 \approx 0.080$. Every sampled concentration at $T/T_c \simeq 0.82$ thus lies well inside the two-phase miscibility gap ($C_v > C_v^{\mathrm{coex}}$), whereas every run at $T/T_c \simeq 1.25$ lies strictly inside the homogeneous supercritical phase.
+
+For geometric normalization, we use the standard three-dimensional random site-percolation thresholds~\cite{Stauffer1994,Lorenz1998,Wang2013}:
+\begin{equation}
+  p_c^{\mathrm{SC}} = 0.3116, \qquad p_c^{\mathrm{BCC}} = 0.2455, \qquad p_c^{\mathrm{FCC}} = 0.1996.
+  \label{eq:pc_values}
+\end{equation}
+Modern large-scale estimates ($0.311608$, $0.245962$, and $0.199235$~\cite{Lorenz1998,Wang2013}) differ from Eq.~\eqref{eq:pc_values} by $< 0.2\%$, well within finite-size and statistical uncertainties. As emphasized in Sec.~\ref{sec:discussion}, $p_c$ refers to \emph{uncorrelated} random site percolation and serves here as a clean geometric reference scale rather than an exact critical threshold for thermally correlated vacancies~\cite{MullerKrumbhaar1974,Coniglio1980}. Table~\ref{tab:lattice_specs} collects all reference constants.
+
+\begin{table*}[t]
+\caption{\label{tab:lattice_specs}Crystallographic, thermodynamic, geometric, and transport reference constants for the three cubic lattices in conventional unit-cell coordinates ($a=1$, $L=20$, $J=1$, $k_B=1$). Here $N$ is the $L=20$ site count, $Z$ the coordination number, $r_{\mathrm{nn}}^2$ the squared nearest-neighbor jump length, $f_0$ the exact dilute Bardeen--Herring/Compaan--Haven correlation factor~\cite{Compaan1956,Manning1968}, $D_{\mathrm{dil},\infty}/C_v = \frac{1}{3}f_0 r_{\mathrm{nn}}^2$ the analytical non-interacting dilute slope (in $a^2/\mathrm{MCS}$), $D_0$ the empirical normalization diffusivity used in Sec.~\ref{sec:reduced_scaling}, $T_c^{\mathrm{LG}} = T_c^{\mathrm{Ising}}/4$ the critical temperature~\cite{Ferrenberg2018,Lundow2009}, and $p_c$ the random site-percolation threshold~\cite{Stauffer1994,Lorenz1998}.}
+\begin{ruledtabular}
+\begin{tabular}{lcccccccc}
+Lattice & $N$ ($L=20$) & $Z$ & $r_{\mathrm{nn}}^2$ ($a^2$) & $f_0$ & $D_{\mathrm{dil},\infty}/C_v$ & $D_0$ ($a^2/\mathrm{MCS}$) & $T_c^{\mathrm{LG}}$ & $p_c$ \\
+\colrule
+SC  & $8{,}000$  & $6$  & $1.00$ & $0.6531$ & $0.2177$ & $0.1890$ & $1.13$ & $0.3116$ \\
+BCC & $16{,}000$ & $8$  & $0.75$ & $0.7272$ & $0.1818$ & $0.1488$ & $1.59$ & $0.2455$ \\
+FCC & $32{,}000$ & $12$ & $0.50$ & $0.7815$ & $0.1303$ & $0.1006$ & $2.45$ & $0.1996$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+\subsection{Conserved Kawasaki Dynamics and Sampling Protocol}
+\label{sec:dynamics}
+
+Time evolution proceeds via conserved nearest-neighbor Kawasaki atom--vacancy exchanges under Metropolis acceptance rules~\cite{Metropolis1953,Kawasaki1966,Kawasaki1972}. One Monte Carlo sweep (MCS) consists of $N$ attempted pair swaps: a site $i$ is selected uniformly from $\{1,\dots,N\}$ and paired with a uniformly chosen nearest neighbor $j \in \mathcal{N}(i)$. If $n_i = n_j$, the move is null. Otherwise, let $u$ be the occupied site ($n_u = 1$) and $v$ the vacant site ($n_v = 0$), with pre-swap occupied neighbor counts $m_u = \sum_{w \in \mathcal{N}(u)} n_w$ and $m_v = \sum_{w \in \mathcal{N}(v)} n_w$. Prior to exchange, atom $u$ forms $m_u$ atom--atom bonds (since $n_v = 0$); after moving to $v$, site $u$ is vacant, so the moved atom forms $m_v - 1$ bonds. The exact energy change is therefore
+\begin{equation}
+  \Delta E = -J\bigl[(m_v - 1) - m_u\bigr] = J(m_u - m_v + 1),
+  \label{eq:delta_e}
+\end{equation}
+accepted with probability $W(\Delta E) = \min\!\left[1, \exp(-\Delta E / T)\right]$. Because ordered-pair selection is symmetric ($P_{\mathrm{prop}}(u \leftrightarrow v) = P_{\mathrm{prop}}(v \leftrightarrow u) = 2/(NZ)$), this rule strictly obeys detailed balance with respect to the canonical Boltzmann distribution at fixed $C_v$. Boltzmann weights $\exp(-Jk/T)$ ($k \in \{0,\dots,Z\}$) are precomputed, and each run uses a collision-free $64$-bit seed derived via SHA-256 hashing of the run parameters feeding a \texttt{xoshiro256**} generator. Across all $465$ trajectories, acceptance rates range from $10.3\%$ to $26.1\%$, confirming sustained microscopic mobility without kinetic arrest.
+
+Each trajectory starts from a uniformly random vacancy configuration and executes $6{,}000$ MCS: a $2{,}000$-MCS burn-in followed by a $4{,}000$-MCS production window during which the mean-squared displacement (MSD) is sampled at $25$ evenly spaced lag times ($\Delta t \in [1, 4{,}000]$ MCS). Below $T_c$ inside the miscibility gap, conserved Kawasaki dynamics does not reach global equilibrium within $6{,}000$ MCS; instead, domains undergo slow Lifshitz--Slyozov--Wagner (LSW) coarsening, $R(t) \sim t^{1/3}$~\cite{Lifshitz1961,Wagner1961,Bray1994}. Accordingly, subcritical structural metrics measured at $t = 6{,}000$ MCS are treated throughout as \emph{finite-time kinetic morphology regimes} at matched sweep age, whereas quasi-stationary diffusive transport over the production window is verified directly via MSD linearity.
+
+The $465$-seed $L=20$ production ensemble covers $31$ conditions ($n = 15$ independent seeds each):
+\begin{itemize}
+  \item \textbf{SC ($9$ conditions, $135$ seeds):} $C_v \in \{0.15, 0.20, 0.25\}$ at $T = 0.93$, $1.41$, and $2.00$ ($T/T_c = 0.823, 1.248, 1.770$).
+  \item \textbf{BCC ($6$ conditions, $90$ seeds):} $C_v \in \{0.15, 0.20, 0.25\}$ at $T = 1.30$ and $1.99$ ($T/T_c = 0.818, 1.252$).
+  \item \textbf{FCC ($16$ conditions, $240$ seeds):} Dense sweep $C_v \in \{0.14, 0.15, 0.16, 0.18, 0.20, 0.22, 0.24, 0.25\}$ at $T = 2.00$ and $3.06$ ($T/T_c = 0.816, 1.249$).
+\end{itemize}
+Matched reduced-temperature controls ($120$ trajectories, $n = 15$ per condition) contrast $T/T_c \simeq 0.82$ against $1.25$ at $C_v = 0.20$ for all three lattices, plus FCC at $C_v = 0.15 < p_c^{\mathrm{FCC}}$. To bracket the subcritical spanning crossovers of SC and BCC tightly without coarse interpolation gaps, we run $75$ additional intermediate trajectories at $T/T_c \simeq 0.82$ ($n = 15$ seeds each, $6{,}000$ MCS) for SC ($C_v \in \{0.18, 0.22\}$ at $T=0.93$) and BCC ($C_v \in \{0.18, 0.22, 0.24\}$ at $T=1.30$). Finite-size benchmarks at $C_v = 0.20, T = 2.00$ ($6{,}000$ MCS) pair the $L=20$ FCC ensemble ($n=15$) with $n=5$ independent $L=40$ ($N=256{,}000$) runs. Figure~\ref{fig:snapshots} illustrates representative $L=20$ subcritical vacancy morphologies after $6{,}000$ MCS.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.98\textwidth]{fig01_vacancy_configurations.pdf}
+  \caption{\label{fig:snapshots}Representative $3\mathrm{D}$ vacancy configurations at $C_v = 0.20$ and matched subcritical temperature $T/T_c \simeq 0.82$ ($L=20$, $6{,}000$ MCS, seed index $0$) for (a) SC ($T = 0.93$, $N=8{,}000$), (b) BCC ($T = 1.30$, $N=16{,}000$), and (c) FCC ($T = 2.00$, $N=32{,}000$). Vermilion spheres show the largest connected vacancy cluster, blue spheres secondary vacancy clusters, and translucent gray spheres the host-atom boundary shell. All three snapshots exhibit pronounced local clustering ($\mathcal{C} \in [2.25, 2.64]$) and compact coarsening vacancy domains.}
+\end{figure*}
+
+\subsection{Transport and Structural Observables}
+\label{sec:observables}
+
+\subsubsection{Unwrapped Diffusivity and Bare Lattice Hierarchy}
+
+Each tagged atom $a \in \{1,\dots,N_{\mathrm{atoms}}\}$ accumulates a continuous unwrapped displacement $\mathbf{r}_a(t)$ updated by exact minimum-image jump vectors $\pm \mathbf{d}_{ij}$ upon every accepted swap, eliminating periodic boundary artifacts. Over the $4{,}000$-MCS production window (referenced to $t_0 = 2{,}000$ MCS), the ensemble-averaged MSD $\langle R^2(\Delta t) \rangle = N_{\mathrm{atoms}}^{-1}\sum_a \|\mathbf{r}_a(t_0 + \Delta t) - \mathbf{r}_a(t_0)\|^2$ is fitted by ordinary least squares (OLS) to the three-dimensional Einstein relation,
+\begin{equation}
+  \langle R^2(\Delta t) \rangle = 6 D \Delta t + b,
+  \label{eq:einstein}
+\end{equation}
+giving $D$ in units of $a^2/\mathrm{MCS}$. To ensure genuinely diffusive transport, we simultaneously check the log--log MSD slope $\alpha_{\mathrm{MSD}} = d\ln\langle R^2(\Delta t)\rangle / d\ln \Delta t$ against the criterion $\alpha_{\mathrm{MSD}} \in [0.95, 1.05]$. Every trajectory ($465/465$) passes this check, with $\bar{\alpha}_{\mathrm{MSD}} = 0.9806 \pm 0.0062$ (range $[0.9557, 0.9913]$) and linear fit $R^2 \ge 0.99946$ (mean $0.99992$).
+
+In conventional cubic cell coordinates ($a = 1$), bare diffusivities follow the systematic hierarchy $D^{\mathrm{SC}} > D^{\mathrm{BCC}} > D^{\mathrm{FCC}}$, mirrored by our normalization constants $D_0^{\mathrm{SC}} = 0.1890 > D_0^{\mathrm{BCC}} = 0.1488 > D_0^{\mathrm{FCC}} = 0.1006$ (Table~\ref{tab:lattice_specs}). This ordering follows directly from the microscopic Kawasaki update clock. During one sweep ($N$ ordered-pair proposals), a specific atom $a$ is proposed for exchange with a vacant neighbor whenever either $i = a$ and $j$ is vacant, or $i$ is a vacant neighbor of $a$ and $j = a$. Each occurs with probability $\langle z_{\mathrm{av}} \rangle/(NZ)$ per attempt, where $\langle z_{\mathrm{av}} \rangle$ is the mean number of vacant nearest neighbors surrounding an \emph{atom}; summing over $N$ proposals yields the exact per-atom exchange attempt rate
+\begin{equation}
+  \Gamma_{\mathrm{att}} = \frac{2\langle z_{\mathrm{av}} \rangle}{Z} \quad (\mathrm{MCS}^{-1}).
+  \label{eq:attempt_rate}
+\end{equation}
+In the non-interacting ($T \to \infty$, $W = 1$) dilute ($C_v \ll 1$) limit, $\langle z_{\mathrm{av}} \rangle = Z C_v$, so the per-atom jump frequency $\Gamma = 2 C_v\;\mathrm{MCS}^{-1}$ is independent of coordination number $Z$. Combining $\Gamma$ with the Bardeen--Herring/Compaan--Haven tracer correlation factor $f_0$~\cite{Bardeen1952,Compaan1956} gives the exact infinite-temperature dilute slope,
+\begin{equation}
+  \frac{D_{\mathrm{dil},\infty}}{C_v} = \frac{1}{6} f_0 \Gamma r_{\mathrm{nn}}^2 C_v^{-1} = \frac{1}{3} f_0 r_{\mathrm{nn}}^2.
+  \label{eq:dilute_exact}
+\end{equation}
+In conventional cell units ($r_{\mathrm{nn}}^2 \in \{1, 3/4, 1/2\}$, $f_0 \in \{0.6531, 0.7272, 0.7815\}$), Eq.~\eqref{eq:dilute_exact} defines the zero-free-parameter analytical diffusivity scale $D_{\mathrm{ref}} \equiv D_{\mathrm{dil},\infty}/C_v = 0.2177$ (SC), $0.1818$ (BCC), and $0.1303$ (FCC) in $a^2/\mathrm{MCS}$. Because $r_{\mathrm{nn}}^2$ drops by $50\%$ from SC to FCC while $f_0$ rises by only $19.7\%$, bare diffusivity decreases monotonically with $Z$. At finite $J/T > 0$, larger coordination $Z$ also raises the typical bond-breaking barrier $\Delta E$ of Eq.~\eqref{eq:delta_e}, mildly suppressing finite-temperature dilute transport relative to the $T \to \infty$ ceiling $D_{\mathrm{ref}}$. For continuity with the reduced-variable transport scaling, we adopt fixed lattice-specific normalization constants $D_0^{\mathrm{SC}} = 0.1890$, $D_0^{\mathrm{BCC}} = 0.1488$, and $D_0^{\mathrm{FCC}} = 0.1006\;a^2/\mathrm{MCS}$ (lying at $D_0/D_{\mathrm{ref}} = 0.868$, $0.819$, and $0.772$, comparable to dilute $D/C_v$ at finite interaction $T \sim 1.1$--$1.4\,T_c$). Dividing $D$ by $D_0$ removes the coordinate-system and bare-jump-geometry baseline; $D_0$ is strictly a lattice-specific reference diffusivity distinct from the Arrhenius prefactor $D_A$ in Eq.~\eqref{eq:arrhenius}. Crucially, Sec.~\ref{sec:reduced_scaling} explicitly repeats the entire reduced-variable analysis using the zero-free-parameter analytical scale $D_{\mathrm{ref}}$, verifying that the collapse is completely independent of any empirical choice of $D_0$.
+
+\subsubsection{Local Clustering, Largest Cluster, and Exact Periodic Wrapping}
+
+At $t = 6{,}000$ MCS, vacancy spatial structure is quantified by three complementary measures. First, comparing the mean number of vacant nearest neighbors around a \emph{vacancy}, $\langle z_v \rangle$, with the random-mixing value $Z C_v$ defines the dimensionless local clustering index,
+\begin{equation}
+  \mathcal{C} = \frac{\langle z_v \rangle}{Z C_v},
+  \label{eq:c_index}
+\end{equation}
+where $\mathcal{C} = 1$ denotes random mixing and $\mathcal{C} > 1$ indicates local vacancy enrichment. Notably, exact bond conservation on any lattice ($N_v \langle z_v \rangle + N_{\mathrm{atoms}}\langle z_{\mathrm{av}}\rangle = Z N_v$) links $\mathcal{C}$ directly to the microscopic atom--vacancy exchange attempt rate in Eq.~\eqref{eq:attempt_rate}:
+\begin{equation}
+  \Gamma_{\mathrm{att}} = \frac{2 C_v}{1 - C_v}\bigl(1 - C_v \mathcal{C}\bigr).
+  \label{eq:bond_conservation}
+\end{equation}
+Higher local clustering $\mathcal{C}$ therefore directly depletes accessible atom--vacancy interfaces, providing an exact microscopic channel linking short-range aggregation to reduced diffusivity.
+
+Second, nearest-neighbor connected components of vacant sites ($n_i = 0$) are extracted by breadth-first search (BFS) to obtain the largest-cluster fraction $f_{\max} = S_{\max}/N_v$ (reported as a percentage), where $S_{\max}$ is the largest component size and $N_v = N C_v$.
+
+Third, to certify system-spanning percolation without false positives from non-wrapping serpentine clusters that merely touch opposite box faces, our BFS constructs an unwrapped spanning tree for each vacant component via exact minimum-image vectors, $\tilde{\mathbf{r}}_v = \tilde{\mathbf{r}}_u + \mathbf{d}_{u \to v}$. Whenever a non-tree cycle edge $(u,v)$ closes a loop within a component, its periodic winding vector $\mathbf{w} = \tilde{\mathbf{r}}_u + \mathbf{d}_{u \to v} - \tilde{\mathbf{r}}_v \in L\mathbb{Z}^3$ is tested; a cluster wraps topologically on the $3$-torus $\mathbb{T}^3$ along axis $\alpha \in \{x,y,z\}$ if and only if $|w_\alpha| > L/2$. Each configuration receives indicator $I_{\mathrm{span}} = 1$ if any vacancy cluster wraps along at least one axis and $0$ otherwise, giving ensemble spanning probability $P_{\mathrm{span}} = \langle I_{\mathrm{span}} \rangle$.
+
+\subsection{Statistical Analysis}
+\label{sec:stats_methods}
+
+All correlations, regressions, and hypothesis tests operate directly on the $465$ independent seed-level trajectories. Linear and monotonic structure--transport associations are measured via Pearson $r$ and Spearman $\rho$. Lattice independence of structure--transport slopes ($\ln D$ vs.\ $\ln f_{\max}$ and $\ln D$ vs.\ $\ln \mathcal{C}$) is tested via nested analysis of covariance (ANCOVA), comparing a $4$-parameter shared-slope model against a $6$-parameter separate-slope model ($F(2,459)$). Likewise, lattice independence of the two-parameter reduced transport law is tested by comparing the $3$-parameter pooled OLS regression against a $9$-parameter lattice-specific fit ($F(6,456)$). Matched temperature controls are evaluated with two-sided Welch $t$-tests ($n = 15$ seeds per condition), and spanning crossovers $C_v^*$ ($P_{\mathrm{span}} = 0.5$) are obtained by linear interpolation across the upward-crossing interval. Throughout the figures, error bars indicate $\pm 1\;\mathrm{SE}$ when reporting ensemble-mean trends across concentrations (Figs.~\ref{fig:diffusivity_vs_cv}--\ref{fig:fcc_sweep}) and $\pm 1\;\mathrm{SD}$ when emphasizing seed-to-seed morphological dispersion across finite-size realizations (Figs.~\ref{fig:thermo_controls} and~\ref{fig:finite_size}).
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Dilute Validation and Breakdown of Linear Carrier Scaling}
+\label{sec:dilute}
+
+Automated high-temperature dilute benchmarks ($T = 100$, $C_v \in \{0.015, 0.030\}$) confirm quantitative recovery of the analytical Bardeen--Herring/Manning slope Eq.~\eqref{eq:dilute_exact} and constant $D/C_v$ for all three lattices. Across the concentrated production ensemble ($C_v \in [0.14, 0.25]$), Fig.~\ref{fig:diffusivity_vs_cv} compares bare tracer diffusivity $D$ at matched reduced temperatures ($T/T_c \simeq 0.82$ and $1.25$, $n = 15$ seeds per point, excluding SC's additional $T/T_c = 1.77$ runs so every lattice is compared on an identical thermal footing). At both matched temperatures, $D$ increases monotonically with $C_v$ while preserving the conventional-cell ordering predicted by Eq.~\eqref{eq:dilute_exact} ($D^{\mathrm{SC}} > D^{\mathrm{BCC}} > D^{\mathrm{FCC}}$ above $T_c$, with SC and BCC nearly coincident below $T_c$ and both well above FCC).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig02_diffusivity_vs_cv.pdf}
+  \caption{\label{fig:diffusivity_vs_cv}Tracer diffusivity $D$ versus vacancy concentration $C_v$ at matched reduced temperatures $T/T_c \simeq 1.25$ (dashed lines, open markers) and $T/T_c \simeq 0.82$ (solid lines, filled markers), with $n = 15$ independent seeds per point ($\pm 1\;\mathrm{SE}$ error bars are smaller than the markers). Separating matched temperatures eliminates temperature-pooling bias and highlights both the thermal mobility boost across $T_c$ and the conventional-cell topology hierarchy of Eq.~\eqref{eq:dilute_exact}.}
+\end{figure}
+
+Dividing by $C_v$ at matched reduced temperatures exposes a sharp, fourfold contrast in the breakdown of independent-carrier scaling between the supercritical and subcritical regimes (Fig.~\ref{fig:norm_diffusivity}). Above $T_c$ ($T/T_c \simeq 1.25$), where vacancies remain only weakly clustered ($\mathcal{C} \approx 1.3$--$1.5$), $D/C_v$ declines gently across $C_v$: by $7.5\%$ in SC ($0.1438 \to 0.1330\;a^2/\mathrm{MCS}$ over $C_v = 0.15 \to 0.25$), $6.5\%$ in BCC ($0.1323 \to 0.1236$), and $6.5\%$ in FCC ($0.1041 \to 0.0974$ over $C_v = 0.14 \to 0.25$). Below $T_c$ ($T/T_c \simeq 0.82$), by contrast, strong attractive aggregation inside the miscibility gap depresses $D/C_v$ steeply: by $28.6\%$ in SC ($0.0916 \to 0.0654$), $29.5\%$ in BCC ($0.0920 \to 0.0649$), and $34.1\%$ in FCC ($0.0791 \to 0.0522$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig03_normalized_diffusivity_vs_cv.pdf}
+  \caption{\label{fig:norm_diffusivity}Normalized diffusivity $D/C_v$ versus $C_v$ at matched reduced temperatures $T/T_c \simeq 1.25$ (dashed, open markers) and $T/T_c \simeq 0.82$ (solid, filled markers; $n = 15$ seeds per point, $\pm 1\;\mathrm{SE}$). Below $T_c$, strong vacancy aggregation drives a $29\%$--$34\%$ drop in $D/C_v$, compared with a mild $6.5\%$--$7.5\%$ decrease above $T_c$.}
+\end{figure}
+
+\subsection{FCC Concentration Sweep and Percolation Spanning Crossover}
+\label{sec:fcc_sweep}
+
+The dense FCC concentration sweep ($C_v \in [0.14, 0.25]$, $n = 15$ seeds per point; complete numerical record in Table~\ref{tab:fcc_sweep_full}) resolves how macroscopic connectivity emerges across $p_c^{\mathrm{FCC}} = 0.1996$ (Fig.~\ref{fig:fcc_sweep}). Below $T_c$ ($T = 2.00$, $T/T_c = 0.816$), $f_{\max}$ climbs steadily from $22.1\%$ at $C_v = 0.14$ to $61.8\%$ at $C_v = 0.20$ and $78.8\%$ at $C_v = 0.25$, while $P_{\mathrm{span}}$ rises from $0.067$ to $0.467$ and $0.933$.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig04_fcc_giant_cluster_vs_cv.pdf}
+  \caption{\label{fig:fcc_sweep}FCC largest-cluster fraction $f_{\max}$ (\%) across $C_v \in [0.14, 0.25]$ ($n = 15$ seeds per point; error bars show standard errors) below $T_c$ ($T = 2.00$, $T/T_c \simeq 0.82$) and above $T_c$ ($T = 3.06$, $T/T_c \simeq 1.25$). The two isotherms intersect near $C_v \approx 0.18$: thermal disorder fragments clusters below $p_c^{\mathrm{FCC}}$, whereas above $p_c^{\mathrm{FCC}}$ it disperses compact droplets into a space-filling percolating mesh with larger $f_{\max}$.}
+\end{figure}
+
+Comparing the subcritical ($T/T_c = 0.816$) and supercritical ($T/T_c = 1.249$) FCC curves reveals a striking isotherm crossing near $C_v \approx 0.18$ (Fig.~\ref{fig:fcc_sweep}). For $C_v \le 0.16$, supercritical thermal disorder keeps vacancies fragmented ($f_{\max} \le 11.2\%$, $P_{\mathrm{span}} = 0$), whereas attractive demixing below $T_c$ forms substantial finite droplets ($f_{\max} = 22\%$--$33\%$). For $C_v \ge 0.20$, however, the supercritical curve \emph{surpasses} the subcritical curve, reaching $f_{\max} = 73.9\%$ ($P_{\mathrm{span}} = 1.00$) at $C_v = 0.20$ and $92.5\%$ at $C_v = 0.25$. This inversion reflects competing kinetic morphologies: below $T_c$, strong attraction compacts vacancies into dense, locally enriched droplets ($\mathcal{C} = 2.39$ at $C_v = 0.20$) whose slow conserved coarsening leaves multiple disconnected droplets at $6{,}000$ MCS; above $T_c$, thermal agitation dissolves compact droplets into a spatially dispersed, weakly correlated ($\mathcal{C} = 1.30$) network that spans the $Z=12$ lattice effortlessly once $C_v \gtrsim p_c^{\mathrm{FCC}}$.
+
+Comparing $P_{\mathrm{span}}(C_v)$ across all three lattices at matched subcritical $T/T_c \simeq 0.82$ using the densely resolved concentration grids ($5$ points for SC, $6$ for BCC, $8$ for FCC; $n=15$ seeds each) exposes a clean monotonic progression with coordination number $Z$ (Fig.~\ref{fig:spanning} and Table~\ref{tab:spanning}). For subcritical FCC ($Z=12$), the $P_{\mathrm{span}} = 0.5$ crossing occurs at $C_v^* = 0.2020$, giving
+\begin{equation}
+  \frac{C_v^*(P_{\mathrm{span}} = 0.5)}{p_c^{\mathrm{FCC}}} = 1.012,
+  \label{eq:fcc_crossing}
+\end{equation}
+within $1.2\%$ of the random site-percolation threshold. By contrast, SC ($Z=6$, $C_v^* = 0.2033$, $C_v^*/p_c^{\mathrm{SC}} = 0.653$) spans $34.7\%$ below its geometric threshold via strong attractive phase separation, while BCC ($Z=8$, tightly bracketed between $C_v = 0.22$ and $0.24$ at $C_v^* = 0.2271$, $C_v^*/p_c^{\mathrm{BCC}} = 0.925$) occupies an intermediate crossover position $7.5\%$ below $p_c^{\mathrm{BCC}}$. Notably, supercritical FCC ($T/T_c = 1.249$) crosses $P_{\mathrm{span}} = 0.5$ at $C_v^* = 0.1725 = 0.864\,p_c^{\mathrm{FCC}}$, slightly below uncorrelated random percolation---the expected shift of thermally correlated site percolation~\cite{MullerKrumbhaar1974,Coniglio1980} induced by residual supercritical attraction ($\mathcal{C} \approx 1.30$--$1.33$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig05_spanning_probability_crossover.pdf}
+  \caption{\label{fig:spanning}Exact periodic spanning probability $P_{\mathrm{span}}$ versus $C_v$ at matched subcritical $T/T_c \simeq 0.82$ for SC ($5$ concentrations), BCC ($6$ concentrations), and FCC ($8$ concentrations; $n = 15$ seeds per point), plus supercritical FCC ($T/T_c = 1.25$). Vertical dotted lines denote random thresholds $p_c$. Normalized crossings progress monotonically with coordination: $C_v^*/p_c = 0.653$ (SC), $0.925$ (BCC), and $1.012$ (FCC).}
+\end{figure}
+
+\begin{table}[t]
+\caption{\label{tab:spanning}Spanning-probability crossover concentrations $C_v^*$ ($P_{\mathrm{span}} = 0.5$, linearly interpolated across densely sampled concentration grids, $n = 15$ seeds per point) relative to random site-percolation thresholds $p_c$.}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+Lattice & $T$ & $T/T_c$ & $p_c$ & $C_v^*$ & $C_v^*/p_c$ \\
+\colrule
+SC  & $0.93$ & $0.823$ & $0.3116$ & $0.2033$ & $0.653$ \\
+BCC & $1.30$ & $0.818$ & $0.2455$ & $0.2271$ & $0.925$ \\
+FCC & $2.00$ & $0.816$ & $0.1996$ & $0.2020$ & $1.012$ \\
+FCC ($T > T_c$) & $3.06$ & $1.249$ & $0.1996$ & $0.1725$ & $0.864$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\subsection{Matched Reduced-Temperature Controls}
+\label{sec:thermo_controls}
+
+To separate thermodynamic aggregation from geometric percolation directly, we compare matched reduced temperatures below ($T/T_c \simeq 0.82$) and above ($T/T_c \simeq 1.25$) each lattice's critical temperature across $n = 15$ seeds per condition (Fig.~\ref{fig:thermo_controls} and Table~\ref{tab:thermo_controls}). At $C_v = 0.20$, heating SC ($C_v/p_c = 0.642$) above $T_c$ collapses $f_{\max}$ from $66.5 \pm 3.0\%$ to $12.5 \pm 5.7\%$ ($p = 1.28 \times 10^{-19}$), confirming purely thermodynamic cluster formation. Heating BCC ($C_v/p_c = 0.815$) similarly reduces $f_{\max}$ from $63.6 \pm 6.9\%$ to $40.8 \pm 10.5\%$ ($p = 2.77 \times 10^{-7}$), with the modest supercritical remnant reflecting BCC's closer proximity to $p_c^{\mathrm{BCC}}$ combined with positive supercritical correlations ($\mathcal{C} = 1.40$).
+
+In sharp contrast, heating FCC at $C_v = 0.20$ ($C_v/p_c = 1.002$) does not destroy the giant cluster: $f_{\max}$ \emph{increases} significantly from $61.8 \pm 11.5\%$ to $73.9 \pm 2.4\%$ ($p = 1.21 \times 10^{-3}$) and $P_{\mathrm{span}}$ jumps from $0.467$ to $1.000$, even as local clustering falls from $\mathcal{C} = 2.39$ to $1.30$. Lowering FCC to $C_v = 0.15$ ($C_v/p_c = 0.752 < 1$) removes this geometric support and immediately restores pronounced thermal destruction: $f_{\max}$ collapses from $31.7 \pm 6.7\%$ below $T_c$ to $7.1 \pm 2.9\%$ above $T_c$ ($p = 5.36 \times 10^{-11}$) with $P_{\mathrm{span}} = 0$ [Fig.~\ref{fig:thermo_controls}(b)]. Together, these matched controls isolate the crossover cleanly: attractive interactions create vacancy-rich domains below $p_c$, while lattice connectivity near $p_c$ sustains a system-spanning backbone above $T_c$.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.92\textwidth]{fig06_thermo_controls_cv020.pdf}
+  \caption{\label{fig:thermo_controls}Matched reduced-temperature controls ($n = 15$ seeds per bar; error bars show $\pm 1\;\mathrm{SD}$). (a) At $C_v = 0.20$, heating from $T/T_c \simeq 0.82$ to $1.25$ strongly suppresses $f_{\max}$ in SC and BCC, whereas FCC retains and expands its spanning network ($61.8\%$ to $73.9\%$, $P_{\mathrm{span}} = 1.00$). (b) Reducing FCC to $C_v = 0.15 < p_c^{\mathrm{FCC}}$ restores thermal destruction ($31.7\%$ to $7.1\%$). All bar heights and uncertainties match Table~\ref{tab:thermo_controls} identically.}
+\end{figure*}
+
+\begin{table*}[t]
+\caption{\label{tab:thermo_controls}Matched reduced-temperature control summary ($n = 15$ seeds per condition, $L=20$, $6{,}000$ MCS). Listed are ensemble mean $\pm$ SD for $f_{\max}$, spanning probability $P_{\mathrm{span}}$, mean local clustering $\mathcal{C}$, mean diffusivity $D$ (in $a^2/\mathrm{MCS}$), and two-sided Welch $t$-test statistics comparing $f_{\max}$ below versus above $T_c$.}
+\begin{ruledtabular}
+\begin{tabular}{lcccccccccc}
+ & & \multicolumn{4}{c}{Below $T_c$ ($T/T_c \simeq 0.82$)} & \multicolumn{4}{c}{Above $T_c$ ($T/T_c \simeq 1.25$)} & \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+Lattice & $C_v$ & $f_{\max}$ (\%) & $P_{\mathrm{span}}$ & $\mathcal{C}$ & $D$ & $f_{\max}$ (\%) & $P_{\mathrm{span}}$ & $\mathcal{C}$ & $D$ & Welch $t$ ($p$) \\
+\colrule
+SC  & $0.20$ & $66.5 \pm 3.0$  & $0.467$ & $2.57$ & $0.01504$ & $12.5 \pm 5.7$  & $0.067$ & $1.56$ & $0.02741$ & $32.46$ ($1.28 \times 10^{-19}$) \\
+BCC & $0.20$ & $63.6 \pm 6.9$  & $0.267$ & $2.46$ & $0.01479$ & $40.8 \pm 10.5$ & $0.333$ & $1.40$ & $0.02543$ & $7.03$  ($2.77 \times 10^{-7}$)  \\
+FCC & $0.20$ & $61.8 \pm 11.5$ & $0.467$ & $2.39$ & $0.01204$ & $73.9 \pm 2.4$  & $1.000$ & $1.30$ & $0.01995$ & $-3.96$ ($1.21 \times 10^{-3}$)  \\
+FCC & $0.15$ & $31.7 \pm 6.7$  & $0.067$ & $2.15$ & $0.01126$ & $7.1 \pm 2.9$   & $0.000$ & $1.32$ & $0.01554$ & $13.11$ ($5.36 \times 10^{-11}$) \\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+\subsection{Local Clustering vs.\ Global Connectivity as Transport Predictors}
+\label{sec:structure_transport}
+
+Across all $465$ seed-level observations, macroscopic cluster size $f_{\max}$ fails decisively as a universal transport coordinate (Table~\ref{tab:struct_transport}). Pooled linear ($r = -0.089$, $p = 0.056$) and rank ($\rho = -0.031$, $p = 0.510$) correlations between $D$ and $f_{\max}$ are negligible, and log--log regression explains only $R^2 = 0.026$. Moreover, individual lattices exhibit \emph{opposite} signs---negative in SC ($r = -0.382$), but positive in BCC ($r = +0.241$) and FCC ($r = +0.497$)---because raising $C_v$ or heating FCC above $T_c$ increases both $D$ and geometric $f_{\max}$ simultaneously. A nested log--log ANCOVA rejects a common slope ($F(2,459) = 20.05$, $p = 4.50 \times 10^{-9}$).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig07_diffusivity_vs_clustering.pdf}
+  \caption{\label{fig:d_vs_c}Seed-level tracer diffusivity $D$ versus local vacancy clustering index $\mathcal{C} = \langle z_v \rangle / (Z C_v)$ across all $n = 465$ trajectories. Higher local clustering consistently lowers diffusivity across all topologies ($r = -0.656$, $\rho = -0.622$), while separate-slope ANCOVA ($F(2,459) = 48.26$, $p = 9.48 \times 10^{-20}$) confirms topology-dependent slopes.}
+\end{figure}
+
+In contrast, the local clustering index $\mathcal{C}$ correlates strongly and negatively with $D$ across every topology (Fig.~\ref{fig:d_vs_c} and Table~\ref{tab:struct_transport}), consistent with the interface-depletion identity Eq.~\eqref{eq:bond_conservation}. Pooled correlations reach $r = -0.656$ ($p = 1.42 \times 10^{-58}$) and $\rho = -0.622$ ($p = 3.44 \times 10^{-51}$), with a pooled power law $D \propto \mathcal{C}^{-0.970}$ ($R^2 = 0.506$) and tight within-lattice correlations ($r \in [-0.878, -0.798]$, all $p < 10^{-25}$). Even so, ANCOVA rejects a single universal slope ($F(2,459) = 48.26$, $p = 9.48 \times 10^{-20}$), resolving steeper suppression in low-coordination SC (log--log slope $-1.364 \pm 0.046$) than in BCC ($-1.020 \pm 0.056$) or FCC ($-0.813 \pm 0.032$). Local vacancy coordination therefore captures far more transport physics than global cluster size, yet no single structural scalar removes lattice topology.
+
+\begin{table*}[t]
+\caption{\label{tab:struct_transport}Seed-level structure--transport correlation statistics ($n = 465$: $n_{\mathrm{SC}} = 135$, $n_{\mathrm{BCC}} = 90$, $n_{\mathrm{FCC}} = 240$) and nested log--log ANCOVA tests of a shared slope across topologies.}
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{ruledtabular}
+\begin{tabular}{lccccc}
+Relation &
+\begin{tabular}{@{}c@{}}Pearson $r$\\($p$)\end{tabular} &
+\begin{tabular}{@{}c@{}}Spearman $\rho$\\($p$)\end{tabular} &
+\begin{tabular}{@{}c@{}}Within-lattice $r$\\(SC / BCC / FCC)\end{tabular} &
+\begin{tabular}{@{}c@{}}ANCOVA $F(2,459)$\\($p$)\end{tabular} &
+\begin{tabular}{@{}c@{}}Log--log slopes\\(SC / BCC / FCC)\end{tabular} \\
+\colrule
+$D$ vs.\ $f_{\max}$ & $-0.089$ ($0.056$) & $-0.031$ ($0.510$) & $-0.382$ / $+0.241$ / $+0.497$ & $20.05$ ($4.50 \times 10^{-9}$) & $-0.111$ / $+0.019$ / $+0.072$ \\
+$D$ vs.\ $\mathcal{C}$ & $-0.656$ ($1.42 \times 10^{-58}$) & $-0.622$ ($3.44 \times 10^{-51}$) & $-0.878$ / $-0.848$ / $-0.798$ & $48.26$ ($9.48 \times 10^{-20}$) & $-1.364$ / $-1.020$ / $-0.813$ \\
+\end{tabular}
+\end{ruledtabular}
+\endgroup
+\end{table*}
+
+\subsection{Finite-Size Morphology and Diffusivity Convergence}
+\label{sec:finite_size}
+
+Comparing subcritical FCC ($C_v = 0.20, T = 2.00$, $6{,}000$ MCS) at $L = 20$ ($N = 32{,}000$, $n = 15$) and $L = 40$ ($N = 256{,}000$, $n = 5$) reveals a stark separation between global morphology and local transport (Fig.~\ref{fig:finite_size} and Table~\ref{tab:finite_size}). Doubling linear system size reduces $f_{\max}$ substantially from $61.8 \pm 11.5\%$ to $42.0 \pm 21.1\%$ and lowers $P_{\mathrm{span}}$ from $0.467$ to $0.200$. Under conserved LSW coarsening ($R(t) \sim t^{1/3}$~\cite{Lifshitz1961,Wagner1961,Bray1994}), domains grow to the same physical scale $R(6{,}000)$ in both supercells, so halving $R(t)/L$ reduces the likelihood that a single domain wraps around the periodic cell or absorbs most vacancies.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig08_finite_size_fcc.pdf}
+  \caption{\label{fig:finite_size}Finite-size comparison for subcritical FCC ($C_v = 0.20, T = 2.00$, $6{,}000$ MCS) at $L = 20$ ($n = 15$) and $L = 40$ ($n = 5$; error bars show $\pm 1\;\mathrm{SD}$). Macroscopic $f_{\max}$ drops under fixed-time LSW coarsening, while local $\mathcal{C}$ and $D$ remain invariant to $<0.4\%$ (Table~\ref{tab:finite_size}).}
+\end{figure}
+
+\begin{table}[t]
+\caption{\label{tab:finite_size}Finite-size benchmark for subcritical FCC ($C_v = 0.20$, $T = 2.00$, $6{,}000$ MCS). Global morphology ($f_{\max}$, $P_{\mathrm{span}}$) depends strongly on system size, whereas $\mathcal{C}$ and $D$ agree to within $0.4\%$.}
+\begin{ruledtabular}
+\begin{tabular}{lcccccc}
+Size & $N$ & $n$ & $f_{\max}$ (\%) & $P_{\mathrm{span}}$ & $\mathcal{C}$ & $D$ ($a^2/\mathrm{MCS}$) \\
+\colrule
+$L=20$ & $32{,}000$  & $15$ & $61.8 \pm 11.5$ & $0.467$ & $2.386$ & $0.01204$ \\
+$L=40$ & $256{,}000$ & $5$  & $42.0 \pm 21.1$ & $0.200$ & $2.383$ & $0.01208$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+Crucially, however, both local clustering ($\mathcal{C} = 2.386$ vs.\ $2.383$, differing by $0.13\%$) and tracer diffusivity ($D = 0.01204$ vs.\ $0.01208$, differing by $0.35\%$) are already quantitatively converged at $L = 20$. This single benchmark simultaneously verifies that our $465$-seed diffusivity dataset is free of severe finite-size artifacts and demonstrates why finite-time $f_{\max}$ cannot serve as a size-independent order parameter or transport predictor.
+
+\subsection{Reduced-Variable Transport Scaling}
+\label{sec:reduced_scaling}
+
+Normalizing diffusivity by $D_0$ (Table~\ref{tab:lattice_specs}), concentration by $p_c$, and temperature by $T_c$ yields our strongest quantitative organization. We first test whether transport collapses onto a single composite parameter,
+\begin{equation}
+  \Lambda = \left(\frac{C_v}{p_c}\right)\!\left(\frac{T_c}{T}\right).
+  \label{eq:lambda}
+\end{equation}
+As detailed in Appendix~\ref{app:diagnostics} (Fig.~\ref{fig:lambda_transport}), this single-variable hypothesis fails completely: pooled regression of $\ln(D/D_0)$ on $\ln\Lambda$ gives $R^2 = 0.024$ (slope $-0.118 \pm 0.035$), with distinct negative per-lattice slopes of $-0.505 \pm 0.073$ (SC), $-0.328 \pm 0.098$ (BCC), and $-0.281 \pm 0.055$ (FCC).
+
+Allowing $C_v/p_c$ and $T/T_c$ to enter with independent exponents,
+\begin{equation}
+  \ln\!\left(\frac{D}{D_0}\right) = a + \alpha \ln\!\left(\frac{C_v}{p_c}\right) + \beta \ln\!\left(\frac{T}{T_c}\right),
+  \label{eq:two_param_log}
+\end{equation}
+or equivalently $D/D_0 = A\,(C_v/p_c)^{\alpha}(T/T_c)^{\beta} = A\,(C_v/p_c)^{\alpha}(T_c/T)^{-\beta}$ with $A = e^a$, dramatically collapses all $465$ trajectories. Pooled OLS regression yields
+\begin{align}
+  a &= -1.8905 \pm 0.0050 \quad (A = 0.1510), \nonumber \\
+  \alpha &= +0.7423 \pm 0.0148, \nonumber \\
+  \beta &= +1.0402 \pm 0.0154,
+  \label{eq:free_fit_params}
+\end{align}
+achieving $R^2_{\log} = 0.9279$. The positive exponent $\beta = +1.040 \pm 0.015$ on $T/T_c$ captures the physical enhancement of diffusivity with temperature (higher exchange acceptance and reduced clustering), corresponding to an \emph{approximately linear} dependence on $T/T_c$---or identically an \emph{inverse-linear} dependence on $T_c/T$ with exponent $\beta_{T_c/T} = -\beta = -1.040 \pm 0.015$.
+
+Equation~\eqref{eq:two_param_log} immediately proves why single-parameter $\Lambda$ fails and yields negative slopes. Substituting $\ln(C_v/p_c) = \ln\Lambda - \ln(T_c/T)$ gives the exact identity
+\begin{equation}
+  \ln\!\left(\frac{D}{D_0}\right) = a + \alpha \ln \Lambda - (\alpha + \beta)\ln\!\left(\frac{T_c}{T}\right).
+  \label{eq:lambda_identity}
+\end{equation}
+Because $\alpha > 0$ and $\beta > 0$ share the same sign in $(C_v/p_c)^{\alpha}(T/T_c)^{\beta}$, increasing $C_v$ at fixed $T$ raises $\ln(D/D_0)$ with slope $+\alpha \approx +3/4$ in $\ln\Lambda$, whereas cooling at fixed $C_v$ lowers $\ln(D/D_0)$ with steeper negative slope $-\beta \approx -1$. Regressing against $\Lambda$ alone therefore mixes opposing concentration and temperature branches into weak, topology-dependent negative slopes (visible directly in Fig.~\ref{fig:lambda_transport}).
+
+Because $\alpha = 0.742 \pm 0.015$ is statistically indistinguishable from $3/4$ ($z = -0.52$) and $\beta = +1.040 \pm 0.015$ lies within $4\%$ of unity, fixing $(\alpha, \beta) = (3/4, +1)$ yields the economical master curve
+\begin{equation}
+  \frac{D}{D_0} = 0.1516 \left(\frac{C_v}{p_c}\right)^{3/4} \left(\frac{T}{T_c}\right),
+  \label{eq:master_scaling}
+\end{equation}
+with $a_{\mathrm{fixed}} = -1.8863$, preserving $R^2_{\log} = 0.9266$ ($\Delta R^2_{\log} = 0.0012$) and achieving $R^2_{\mathrm{lin}} = 0.9381$ across all $465$ seeds (Fig.~\ref{fig:master_curve}).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig09_two_param_master_curve.pdf}
+  \caption{\label{fig:master_curve}Two-parameter reduced-variable transport collapse of all $n = 465$ trajectories plotted against $M = (C_v/p_c)^{3/4}(T/T_c)$. The dashed line denotes the fixed-exponent relation $D/D_0 = 0.1516\,M$ ($R^2_{\log} = 0.9266$, $R^2_{\mathrm{lin}} = 0.9381$); free-exponent OLS gives $\alpha = 0.742 \pm 0.015$ and $\beta = +1.040 \pm 0.015$ ($R^2_{\log} = 0.9279$).}
+\end{figure}
+
+Two critical robustness checks confirm that this transport collapse is genuine rather than an artifact of empirical normalization or temperature-grid sampling, while illuminating subtle features of the fitted exponents (Table~\ref{tab:scaling_fits}). First, because $p_c$ decreases from SC to FCC, the three lattices occupy staggered $C_v/p_c$ intervals (SC lowest, FCC highest). Under $D_0$, the per-lattice prefactors climb modestly across those windows ($A = 0.1415 \to 0.1462 \to 0.1532$, reflecting $D_0/D_{\mathrm{ref}}$ falling from $0.868$ to $0.772$), introducing a mild between-lattice tilt (a Simpson's-paradox effect) that pushes the pooled slope $\alpha = 0.742$ slightly above all three within-lattice slopes ($\alpha \in [0.580, 0.703]$). Replacing $D_0$ with the \emph{zero-free-parameter} analytical dilute scale $D_{\mathrm{ref}} = \frac{1}{3}f_0 r_{\mathrm{nn}}^2 \in \{0.2177, 0.1818, 0.1303\}\;a^2/\mathrm{MCS}$ removes this offset, improves the free-exponent collapse across all $465$ trajectories ($R^2_{\log} = 0.9407$, $\beta = +1.075 \pm 0.014$), and places the pooled concentration exponent $\alpha = 0.628 \pm 0.013$ squarely within $[0.580, 0.703]$; meanwhile, the economical fixed-$(3/4, +1)$ approximation retains $R^2_{\log} > 0.92$ under both normalizations ($0.9266$ for $D/D_0$; $0.9222$ and $R^2_{\mathrm{lin}} = 0.9339$ for $D/D_{\mathrm{ref}}$). Second, restricting the regression to the strictly matched two-temperature subset ($n = 420$, excluding SC's extra $T/T_c = 1.77$ runs) preserves tight collapse ($R^2_{\log} = 0.9447$ free, $0.9279$ fixed for $D/D_0$; $0.9506$ free, $0.9108$ fixed for $D/D_{\mathrm{ref}}$) while steepening the effective temperature exponent from $\beta = +1.040 \pm 0.015$ to $+1.176 \pm 0.017$ (and lowering $\alpha$ to $0.686 \pm 0.014$). This shift has a direct physical origin: between $T/T_c \simeq 0.82$ and $1.25$, crossing $T_c$ rapidly dissolves vacancy clusters ($\mathcal{C}$ falling from $\sim 2.5$ to $\sim 1.3$), producing a steeper local slope ($\beta \approx +1.18$), whereas extending SC to $T/T_c = 1.77$ enters the high-temperature supercritical regime where $D(T)$ curves downward toward its finite $T \to \infty$ saturation ceiling ($W \to 1$), pulling the average log--log slope closer to $+1.04$ (anticipating the high-$T$ curvature noted in Sec.~\ref{sec:limitations}).
+
+Nevertheless, the collapse represents \emph{near-universal empirical scaling with measurable residual topology dependence}, not exact universality. A nested $F$-test comparing the $3$-parameter pooled model against a $9$-parameter model with lattice-specific $(a_g, \alpha_g, \beta_g)$ rejects exact equality ($F(6,456) = 29.34$, $p = 9.95 \times 10^{-30}$; Table~\ref{tab:scaling_fits}). Individually, each lattice achieves tight internal collapse ($R^2_{\log} = 0.9373$ for SC, $0.9580$ for BCC, and $0.9454$ for FCC), with SC showing a slightly steeper concentration exponent ($\alpha_{\mathrm{SC}} = 0.703$) than BCC ($0.590$) and FCC ($0.580$), and BCC showing a steeper temperature exponent ($\beta_{\mathrm{BCC}} = 1.214$) than SC ($1.044$) and FCC ($1.079$). By comparison, fitting $\ln f_{\max}$ to the same two reduced variables achieves only $R^2 = 0.6531$ ($\alpha = 2.611$, $\beta = -1.517$), underscoring that tracer diffusivity admits a much tighter dimensionless description than finite-time cluster morphology.
+
+\begin{table*}[t]
+\caption{\label{tab:scaling_fits}Two-parameter reduced transport fits, $\ln(D/D_{\mathrm{norm}}) = a + \alpha \ln(C_v/p_c) + \beta \ln(T/T_c)$, pooled across all $n = 465$ seeds, separately by lattice, under zero-free-parameter analytical normalization $D_{\mathrm{ref}} = \frac{1}{3}f_0 r_{\mathrm{nn}}^2$, and on the matched two-temperature subset ($n = 420$, excluding SC $T/T_c = 1.77$). The inverse reduced-temperature exponent is identically $\beta_{T_c/T} = -\beta$. Rows labeled ``constrained'' hold $(\alpha, \beta) = (3/4, +1)$ exact, with linear-space $R^2_{\mathrm{lin}}$ in parentheses. Nested shared-vs.-free testing on $D/D_0$ yields $F(6,456) = 29.34$ ($p = 9.95 \times 10^{-30}$).}
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{ruledtabular}
+\begin{tabular}{lcccccc}
+Model / Subset & $n$ & $A = e^a$ & $\alpha$ ($C_v/p_c$) & $\beta$ ($T/T_c$) & $\beta_{T_c/T} = -\beta$ & $R^2_{\log}$ ($R^2_{\mathrm{lin}}$) \\
+\colrule
+Pooled $D/D_0$ (free) & $465$ & $0.1510$ & $0.742 \pm 0.015$ & $+1.040 \pm 0.015$ & $-1.040 \pm 0.015$ & $0.9279$ \\
+Pooled $D/D_0$ (constrained) & $465$ & $0.1516$ & $3/4$ & $+1$ & $-1$ & $0.9266$ ($0.9381$) \\
+\colrule
+SC $D/D_0$ (free)  & $135$ & $0.1415$ & $0.703 \pm 0.039$ & $+1.044 \pm 0.026$ & $-1.044 \pm 0.026$ & $0.9373$ \\
+BCC $D/D_0$ (free) & $90$  & $0.1462$ & $0.590 \pm 0.031$ & $+1.214 \pm 0.030$ & $-1.214 \pm 0.030$ & $0.9580$ \\
+FCC $D/D_0$ (free) & $240$ & $0.1532$ & $0.580 \pm 0.020$ & $+1.079 \pm 0.019$ & $-1.079 \pm 0.019$ & $0.9454$ \\
+\colrule
+Analytical $D/D_{\mathrm{ref}}$ (free) & $465$ & $0.1189$ & $0.628 \pm 0.013$ & $+1.075 \pm 0.014$ & $-1.075 \pm 0.014$ & $0.9407$ \\
+Analytical $D/D_{\mathrm{ref}}$ (constrained) & $465$ & $0.1225$ & $3/4$ & $+1$ & $-1$ & $0.9222$ ($0.9339$) \\
+Matched-$T$ $D/D_0$ (free) & $420$ & $0.1509$ & $0.686 \pm 0.014$ & $+1.176 \pm 0.017$ & $-1.176 \pm 0.017$ & $0.9447$ \\
+Matched-$T$ $D/D_0$ (constrained) & $420$ & $0.1529$ & $3/4$ & $+1$ & $-1$ & $0.9279$ \\
+\end{tabular}
+\end{ruledtabular}
+\endgroup
+\end{table*}
+
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{The Thermodynamic-to-Geometric Crossover}
+\label{sec:crossover_discussion}
+
+Our concentration sweeps, spanning probabilities, matched temperature controls, and finite-size benchmarks unify into a three-regime picture of vacancy organization across $(T, C_v, Z)$ space. In the dilute regime ($C_v \ll p_c$), vacancies move almost independently and $D \propto C_v$ with the exact Bardeen--Herring/Manning prefactor $\frac{1}{3}f_0 r_{\mathrm{nn}}^2$; lattice topology sets only the absolute diffusivity scale.
+
+At intermediate concentrations below the geometric connectivity threshold ($C_v < p_c$, $T < T_{\mathrm{coex}}$), attractive interactions drive phase separation inside the Ising miscibility gap, aggregating vacancies into compact domains that span finite boxes below random percolation (SC at $0.653\,p_c^{\mathrm{SC}}$, BCC at $0.925\,p_c^{\mathrm{BCC}}$). Heating above $T_c$ dissolves these domains---collapsing $f_{\max}$ in SC at $C_v = 0.20$ and in FCC at $C_v = 0.15$---confirming their thermodynamic origin. Because conserved Kawasaki kinetics coarsens domains slowly as $R(t) \sim t^{1/3}$, subcritical cluster sizes remain inherently sensitive to box size and simulation age.
+
+Once concentration approaches the random site-percolation threshold ($C_v \gtrsim p_c(Z)$), lattice connectivity enters on equal footing with thermodynamics. In FCC at $C_v = 0.20 \approx p_c^{\mathrm{FCC}}$, heating through $T_c$ actually \emph{enlarges} the giant cluster and drives $P_{\mathrm{span}}$ to unity because thermal agitation disperses compact subcritical droplets into a space-filling percolating backbone supported by twelve-fold coordination and mild supercritical attraction ($\mathcal{C} \approx 1.30$). That supercritical FCC spans at $0.864\,p_c^{\mathrm{FCC}}$ underscores the distinction between uncorrelated random site percolation ($p_c$, our geometric normalization scale) and thermally correlated lattice-gas percolation~\cite{MullerKrumbhaar1974,Coniglio1980}, where residual nearest-neighbor attractions systematically lower the percolation threshold.
+
+\subsection{Why Local Coordination Outperforms Global Connectivity for Transport}
+\label{sec:morphology_vs_transport}
+
+The failure of $f_{\max}$ as a transport predictor ($r = -0.089$, opposite signs across SC vs.\ FCC) has a direct microscopic explanation. Atomic diffusivity is governed by the local jump environment---the availability of adjacent vacancies and the bond-breaking barrier $\Delta E$ of Eq.~\eqref{eq:delta_e}---rather than whether distant vacancy clusters connect across the box. Near percolation or during coarsening, a single bridging site can merge two large clusters and double $f_{\max}$ without appreciably altering local coordination or mobility. The $L = 20 \to L = 40$ FCC benchmark demonstrates this decoupling directly: $f_{\max}$ falls by nearly one-third while $\mathcal{C}$ and $D$ remain invariant to better than $0.4\%$.
+
+By contrast, exact bond conservation [Eq.~\eqref{eq:bond_conservation}] shows that increasing local clustering $\mathcal{C}$ directly reduces the atom--vacancy interface density and attempt frequency $\Gamma_{\mathrm{att}}$, explaining the strong negative correlation between $\mathcal{C}$ and $D$ in every topology ($r \in [-0.88, -0.80]$). Even $\mathcal{C}$ cannot collapse all three lattices onto a single slope ($F(2,459) = 48.26$), however, because the Boltzmann energy spectrum $\Delta E \in [-ZJ, +ZJ]$ and correlated back-jump paths depend explicitly on coordination number $Z$, imposing a steeper mobility penalty per unit clustering in low-coordination SC (slope $-1.364$) than in close-packed FCC ($-0.813$).
+
+\subsection{Physical Meaning of the Reduced Transport Scaling Law}
+\label{sec:scaling_interpretation}
+
+Separating the geometric ($C_v/p_c$) and thermodynamic ($T/T_c$) axes explains why Eq.~\eqref{eq:master_scaling} captures $\sim 93\%$ of the transport variance across all three cubic lattices where single-parameter $\Lambda$ fails. At concentrated $C_v \in [0.14, 0.25]$, attractive clustering sequesters an increasing share of vacancies inside low-mobility cluster cores with few adjacent atoms, depressing the effective concentration exponent from its dilute value of unity to an empirical sublinear value $\alpha = 0.742 \pm 0.015 \approx 3/4$ (or $\alpha = 0.628 \pm 0.013$ under zero-free-parameter $D_{\mathrm{ref}}$, matching the within-lattice range $0.58$--$0.70$). Simultaneously, over $T/T_c \in [0.82, 1.77]$, enhanced Metropolis acceptance and thermal dissociation of local clusters ($\mathcal{C}$ falling from $\sim 2.5$ to $\sim 1.3$) combine to raise $D/D_0$ nearly linearly with $T/T_c$ ($\beta = +1.040 \pm 0.015$, equivalently inverse-linearly with $T_c/T$).
+
+We stress that $\alpha \approx 3/4$ and $\beta \approx +1$ are effective empirical exponents over the sampled regime rather than exact critical exponents. The high-significance nested $F$-test ($F(6,456) = 29.34$, $p = 9.95 \times 10^{-30}$) confirms that normalizing by $(p_c, T_c, D_0)$ captures the dominant topology dependence, leaving $7.2\%$ unexplained log-variance in total---of which only $\Delta R^2_{\log} = 2.0\%$ ($R^2_{\log,\mathrm{sep}} = 0.9480$ vs.\ $R^2_{\log} = 0.9279$) is attributable to lattice-specific parameters reflecting discrete coordination geometry and bond-energy spectra, with the remaining $5.2\%$ arising from within-lattice curvature and seed dispersion.
+
+\subsection{Model Scope and Future Directions}
+\label{sec:limitations}
+
+Four natural extensions bound the present results. First, our lattice-gas Hamiltonian includes only isotropic nearest-neighbor attractions; realistic crystalline materials introduce elastic strain fields, longer-range defect interactions, and configuration-dependent migration barriers beyond Metropolis Kawasaki dynamics. Second, while $L = 40$ establishes finite-size convergence of $D$ and $\mathcal{C}$ below $T_c$, extending $L = 40$ controls above $T_c$ and scaling system sizes $L \in \{20, 30, 40, 60\}$ at matched coarsening ages $t \propto L^3$ would allow direct extraction of asymptotic finite-size percolation exponents. Third, probing wider temperature intervals (where strict Arrhenius curvature $e^{-Q/T}$ must eventually overtake linear $T/T_c$ behavior), lower concentrations bridging to $\alpha \to 1$, and non-cubic crystal classes (such as HCP and diamond cubic) will establish the full validity domain of Eq.~\eqref{eq:master_scaling}. Finally, mapping the complete $(T/T_c, C_v/p_c)$ plane---combining Ising binodals, correlated Kert\'esz/percolation boundaries, and dynamic structure factors---would unify equilibrium phase diagrams with the kinetic crossover documented here.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+By comparing SC, BCC, and FCC lattices across $465$ primary conserved Kawasaki Monte Carlo trajectories ($6{,}000$ sweeps each), dense subcritical spanning sweeps, matched reduced-temperature controls, and $L=40$ finite-size benchmarks, we have shown that vacancy clustering and transport are governed by a topology-dependent crossover between thermodynamics, percolation geometry, and conserved coarsening kinetics. Below the random site-percolation scale $p_c(Z)$, attractive interactions drive phase separation inside the Ising miscibility gap, forming compact vacancy domains that span finite supercells below $p_c$ (SC at $0.653\,p_c^{\mathrm{SC}}$, BCC at $0.925\,p_c^{\mathrm{BCC}}$) and dissolve upon heating above $T_c$. Near $p_c^{\mathrm{FCC}}$, high lattice coordination stabilizes a spanning vacancy backbone that survives---and upon droplet dispersion, expands---above $T_c$ ($P_{\mathrm{span}} = 1.00$), whereas lowering FCC to $C_v = 0.15 < p_c^{\mathrm{FCC}}$ restores thermal destruction.
+
+This crossover clarifies a fundamental decoupling between macroscopic morphology and microscopic transport. Global cluster size $f_{\max}$ is highly sensitive to finite-time LSW coarsening ($61.8\%$ at $L=20$ vs.\ $42.0\%$ at $L=40$) and fails as a universal predictor of diffusivity, whereas local clustering $\mathcal{C}$ and tracer diffusivity $D$ converge to within $0.4\%$ at $L=20$ and are linked microscopically through atom--vacancy interface conservation. After removing bare conventional-cell jump geometry via $D_0$---or equivalently via the zero-free-parameter analytical dilute scale $D_{\mathrm{ref}} = \frac{1}{3}f_0 r_{\mathrm{nn}}^2$---tracer transport across all three cubic topologies collapses cleanly onto the empirical two-parameter scaling law $D/D_0 = 0.1516\,(C_v/p_c)^{3/4}(T/T_c)$ ($R^2_{\log} = 0.9266$, $R^2_{\mathrm{lin}} = 0.9381$; $R^2_{\log} = 0.9407$ free with $D_{\mathrm{ref}}$), capturing $\sim 93\%$--$94\%$ of the total variance while exposing a statistically resolved residual topology signature.
+
+\section*{Data and Code Availability}
+The Numba-accelerated Kawasaki Monte Carlo engine, exact periodic topological wrapping analyzer, automated $18$-test physics-invariant verification suite (\texttt{pytest}), statistical analysis pipeline, figure-generation scripts, raw CSV datasets (\texttt{seed\_level\_465.csv}, \texttt{fcc\_concentration\_sweep.csv}, \texttt{spanning\_dense\_subcritical.csv}, \texttt{thermo\_controls.csv}, \texttt{finite\_size\_fcc.csv}), and machine-readable summary statistics (\texttt{summary\_stats.json}) are maintained in a public repository (\texttt{lattice-vacancy-crossover}) and will be archived with a permanent Zenodo DOI upon publication; all code and data are available for verification during peer review. Every trajectory is bit-for-bit reproducible from the documented deterministic SHA-256 seed schedule.
+
+\appendix
+
+\section{Single-Parameter Scaling Diagnostics and FCC Sweep Data}
+\label{app:diagnostics}
+
+Figures~\ref{fig:lambda_transport} and~\ref{fig:lambda_fmax} document the failure of single-parameter collapse in $\Lambda = (C_v/p_c)(T_c/T)$ for both tracer diffusivity and macroscopic cluster morphology across all $n = 465$ trajectories.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig10_single_param_lambda_transport.pdf}
+  \caption{\label{fig:lambda_transport}Normalized diffusivity $D/D_0$ versus single composite variable $\Lambda = (C_v/p_c)(T_c/T)$ across all $n = 465$ trajectories. Dashed lines show per-lattice log--log fits with distinct negative slopes ($-0.505$ for SC, $-0.328$ for BCC, $-0.281$ for FCC; pooled $R^2 = 0.024$). Within each isotherm, $D/D_0$ rises positively with $\Lambda \propto C_v$ (slope $+\alpha$), while cooling shifts branches downward and rightward (slope $-\beta$), illustrating Eq.~\eqref{eq:lambda_identity}.}
+\end{figure}
+
+In Fig.~\ref{fig:lambda_transport}, the opposing concentration and temperature trends proved in Eq.~\eqref{eq:lambda_identity} are directly visible as parallel rising isothermal branches displaced downward and rightward as $T$ decreases. Regressing $\ln(D/D_0)$ onto $\ln\Lambda$ alone yields weak, topology-dependent negative slopes: $-0.505 \pm 0.073$ ($R^2 = 0.264$) for SC, $-0.328 \pm 0.098$ ($R^2 = 0.112$) for BCC, $-0.281 \pm 0.055$ ($R^2 = 0.097$) for FCC, and $-0.118 \pm 0.035$ ($R^2 = 0.024$) pooled.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\columnwidth]{fig11_single_param_lambda_fmax.pdf}
+  \caption{\label{fig:lambda_fmax}Largest-cluster fraction $f_{\max}$ (\%) versus $\Lambda = (C_v/p_c)(T_c/T)$ across all $n = 465$ observations. Wide vertical spread at fixed $\Lambda$ confirms that finite-time morphology retains strong topology and coarsening dependence.}
+\end{figure}
+
+Figure~\ref{fig:lambda_fmax} shows $f_{\max}$ versus $\Lambda$. Although $f_{\max}$ increases broadly with $\Lambda$, lattice branches span $18\%$ to $93\%$ near $\Lambda \approx 1.0$, and even two-parameter regression on $\ln(C_v/p_c)$ and $\ln(T/T_c)$ reaches only $R^2 = 0.6531$.
+
+Finally, Table~\ref{tab:fcc_sweep_full} compiles the full $15$-seed ensemble statistics across all $16$ FCC concentration-sweep conditions ($240$ trajectories) supporting Figs.~\ref{fig:fcc_sweep} and~\ref{fig:spanning}.
+
+\FloatBarrier
+\clearpage
+\onecolumngrid
+\noindent\begin{minipage}{\textwidth}
+\inlinetablecaption{\label{tab:fcc_sweep_full}Complete $15$-seed ensemble statistics for the FCC concentration sweep ($L=20$, $N=32{,}000$, $6{,}000$ MCS) at $T = 2.00$ ($T/T_c = 0.816$) and $T = 3.06$ ($T/T_c = 1.249$). Reported are mean $\pm$ SD for $f_{\max}$, spanning probability $P_{\mathrm{span}}$, mean local clustering $\mathcal{C}$, and mean $\pm$ SE for diffusivity $D$ (in $10^{-2}\,a^2/\mathrm{MCS}$).}
+\begin{ruledtabular}
+\begin{tabular}{cccccccccc}
+ & & \multicolumn{4}{c}{$T = 2.00$ ($T/T_c = 0.816$, below $T_c$)} & \multicolumn{4}{c}{$T = 3.06$ ($T/T_c = 1.249$, above $T_c$)} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-10}
+$C_v$ & $C_v/p_c^{\mathrm{FCC}}$ & $f_{\max}$ (\%) & $P_{\mathrm{span}}$ & $\mathcal{C}$ & $D$ & $f_{\max}$ (\%) & $P_{\mathrm{span}}$ & $\mathcal{C}$ & $D$ \\
+\colrule
+$0.14$ & $0.701$ & $22.1 \pm 10.3$ & $0.067$ & $1.91$ & $1.108 \pm 0.004$ & $4.7 \pm 1.5$  & $0.000$ & $1.33$ & $1.458 \pm 0.002$ \\
+$0.15$ & $0.752$ & $31.7 \pm 6.7$  & $0.067$ & $2.15$ & $1.126 \pm 0.006$ & $7.1 \pm 2.9$  & $0.000$ & $1.32$ & $1.554 \pm 0.002$ \\
+$0.16$ & $0.802$ & $33.2 \pm 9.3$  & $0.067$ & $2.24$ & $1.147 \pm 0.006$ & $11.2 \pm 3.8$ & $0.000$ & $1.32$ & $1.641 \pm 0.003$ \\
+$0.18$ & $0.902$ & $46.3 \pm 11.7$ & $0.133$ & $2.38$ & $1.171 \pm 0.005$ & $47.3 \pm 9.9$ & $0.800$ & $1.32$ & $1.820 \pm 0.002$ \\
+$0.20$ & $1.002$ & $61.8 \pm 11.5$ & $0.467$ & $2.39$ & $1.204 \pm 0.005$ & $73.9 \pm 2.4$ & $1.000$ & $1.30$ & $1.995 \pm 0.004$ \\
+$0.22$ & $1.102$ & $70.7 \pm 7.6$  & $0.800$ & $2.36$ & $1.249 \pm 0.005$ & $85.1 \pm 1.3$ & $1.000$ & $1.30$ & $2.167 \pm 0.004$ \\
+$0.24$ & $1.202$ & $73.2 \pm 9.2$  & $0.933$ & $2.31$ & $1.293 \pm 0.003$ & $90.2 \pm 1.0$ & $1.000$ & $1.29$ & $2.341 \pm 0.003$ \\
+$0.25$ & $1.253$ & $78.8 \pm 3.8$  & $0.933$ & $2.25$ & $1.304 \pm 0.003$ & $92.5 \pm 0.5$ & $1.000$ & $1.28$ & $2.434 \pm 0.003$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{minipage}
+\par\vspace{1.2em}
+\twocolumngrid
+
+\bibliography{references}
+
+\end{document}
