@@ -295,3 +295,87 @@ def test_dilute_limit_d_over_cv_recovery(name: str) -> None:
     # 2. Linearity across dilute concentrations (constant D/Cv within 10%)
     ratio = d_over_cv_measured[1] / d_over_cv_measured[0]
     assert 0.90 < ratio < 1.10, f"{name}: D/Cv changed across dilute Cv: {d_over_cv_measured}"
+
+
+# ---------------------------------------------------------------------------
+# 5. Fast Clustering Kernel, 3D Structure Factor R_S, & Logistic MLE Checks
+# ---------------------------------------------------------------------------
+
+def test_fast_c_index_and_window_alignment() -> None:
+    from src.kawasaki_mc import compute_c_index_fast
+
+    lat = build_lattice("FCC", L=6)
+    sim = simulate_trajectory(lat, Cv=0.20, T=2.0, seed=4242, total_sweeps=60, burn_in=20, n_msd_samples=10)
+    c_ref, _ = compute_local_clustering_index(sim.occ, lat)
+    c_fast = float(compute_c_index_fast(sim.occ, lat.neighbors))
+    assert np.isclose(c_fast, c_ref, rtol=1e-12, atol=1e-12)
+    assert len(sim.c_index_values) == len(sim.msd_times)
+    assert np.isclose(sim.mean_c_index_window, float(np.mean(sim.c_index_values)), atol=1e-12)
+    assert np.isclose(sim.c_index_values[-1], c_ref, atol=1e-12)
+
+
+def test_structure_factor_length_exact_plane_wave_mode() -> None:
+    from src.run_reviewer_experiments import compute_structure_factor_length
+
+    L = 8
+    lat = build_lattice("SC", L)
+    # Slab of vacancies occupying x in {0, 1, 2, 3} -> pure x-direction periodic domain of wavelength L
+    occ = np.ones(lat.N, dtype=np.int8)
+    for ix in range(L // 2):
+        for iy in range(L):
+            for iz in range(L):
+                occ[lat.site_index(ix, iy, iz, 0)] = 0
+    r_s, k1, r_int = compute_structure_factor_length(occ, lat)
+    # Odd harmonics of square wave slightly raise k1 above 2*pi/L, so R_S is just below L and > 0.7*L
+    assert 0.70 * L < r_s < 1.01 * L
+    assert np.isclose(r_s, 2.0 * np.pi / k1, rtol=1e-12)
+    # Exact interface: 2 planar walls of area L^2 out of N_atoms = L^3/2 -> <z_av> = 2/L -> R_int = L/2 = 4.0
+    assert np.isclose(r_int, 2.0, rtol=1e-12) or np.isclose(r_int, 0.5 * L, rtol=1e-12)
+    # Specifically: each of 2 walls has L^2 atom-vacancy bonds -> total 2*L^2 bonds across L^3/2 atoms
+    # -> <z_av> = (2*L^2) / (L^3/2) = 4/L = 0.5 -> R_int = L/4 = 2.0!
+    assert np.isclose(r_int, float(L) / 4.0, rtol=1e-12)
+
+
+def test_wilson_ci_and_logistic_mle_exact_midpoint() -> None:
+    from src.statistics import _fit_binomial_logistic_mle, wilson_ci
+
+    lo, hi = wilson_ci(25, 50)
+    assert np.isclose(lo + hi, 1.0, atol=1e-12)
+    assert 0.35 < lo < 0.38 and 0.62 < hi < 0.65
+
+    # Exact symmetric logit data centered at Cv = 0.2000
+    cv = np.array([0.18, 0.19, 0.20, 0.21, 0.22], dtype=np.float64)
+    n = np.full(5, 100, dtype=np.float64)
+    p_true = 1.0 / (1.0 + np.exp(-150.0 * (cv - 0.20)))
+    k = n * p_true
+    g0, g1, cv_star = _fit_binomial_logistic_mle(cv, k, n)
+    assert np.isclose(cv_star, 0.20, atol=1e-7)
+    assert np.isclose(g1, 150.0, rtol=1e-4)
+
+
+def test_condition_fixed_effects_exact_slope_recovery() -> None:
+    import pandas as pd
+    from src.statistics import condition_fixed_effects
+
+    rng = np.random.default_rng(1234)
+    rows = []
+    # 10 conditions with arbitrary large intercepts mu_j and known within-condition slope -0.25
+    for j in range(10):
+        mu_j = -5.0 + 0.4 * j
+        x_mean_j = 1.2 + 0.15 * j
+        for i in range(15):
+            x_ij = x_mean_j + rng.normal(0.0, 0.08)
+            ln_d_ij = mu_j - 0.25 * (x_ij - x_mean_j) + rng.normal(0.0, 1e-4)
+            rows.append({
+                "lattice": "FCC",
+                "Cv": 0.15 + 0.01 * j,
+                "T": 2.0,
+                "D": float(np.exp(ln_d_ij)),
+                "C_bar": float(x_ij),
+            })
+    res = condition_fixed_effects(pd.DataFrame(rows), "C_bar", log_x=False, n_boot=999, boot_seed=42)
+    assert res["G_conditions"] == 10
+    assert np.isclose(res["beta_FE"], -0.25, atol=1e-3)
+    assert res["R2_within"] > 0.999
+    assert res["p_CR1"] < 1e-10
+    assert res["p_WCB"] <= 0.005

@@ -98,6 +98,26 @@ def compute_msd(unwrapped_disp: np.ndarray, disp_ref: np.ndarray) -> float:
 
 
 @njit(cache=True)
+def compute_c_index_fast(occ: np.ndarray, neighbors: np.ndarray) -> float:
+    """Compute local clustering index C = <z_v> / (Z * C_v) at a trajectory checkpoint."""
+    n_sites = occ.shape[0]
+    z_coord = neighbors.shape[1]
+    n_vac = 0
+    vac_nbr_sum = 0
+    for i in range(n_sites):
+        if occ[i] == 0:
+            n_vac += 1
+            for k in range(z_coord):
+                if occ[neighbors[i, k]] == 0:
+                    vac_nbr_sum += 1
+    if n_vac == 0:
+        return 0.0
+    mean_zv = float(vac_nbr_sum) / float(n_vac)
+    cv = float(n_vac) / float(n_sites)
+    return mean_zv / (float(z_coord) * cv)
+
+
+@njit(cache=True)
 def kawasaki_sweeps_kernel(
     occ: np.ndarray,
     site_to_atom: np.ndarray,
@@ -265,6 +285,9 @@ class SimulationResult:
     acceptance_rate: float
     final_energy: float
     final_energy_per_site: float
+    c_index_values: np.ndarray | None = None
+    mean_c_index_window: float = float("nan")
+    sd_c_index_window: float = float("nan")
 
 
 def simulate_trajectory(
@@ -338,6 +361,7 @@ def simulate_trajectory(
 
     msd_times = np.empty(len(checkpoints), dtype=np.float64)
     msd_values = np.empty(len(checkpoints), dtype=np.float64)
+    c_index_values = np.empty(len(checkpoints), dtype=np.float64)
 
     prev_t = 0
     for idx, t_prod in enumerate(checkpoints):
@@ -355,12 +379,15 @@ def simulate_trajectory(
         accepted_total += int(acc_p)
         msd_times[idx] = float(t_prod)
         msd_values[idx] = float(compute_msd(unwrapped_disp, disp_ref))
+        c_index_values[idx] = float(compute_c_index_fast(occ, lattice.neighbors))
         prev_t = int(t_prod)
 
     n_vac = int(np.sum(occ == 0))
     n_atoms = lattice.N - n_vac
     attempted_total = int(total_sweeps) * int(lattice.N)
     final_energy = float(compute_total_energy(occ, lattice.neighbors, J=J))
+    mean_c_win = float(np.mean(c_index_values))
+    sd_c_win = float(np.std(c_index_values, ddof=1)) if len(c_index_values) > 1 else 0.0
 
     return SimulationResult(
         lattice_name=lattice.name,
@@ -385,4 +412,7 @@ def simulate_trajectory(
         acceptance_rate=float(accepted_total) / float(attempted_total),
         final_energy=final_energy,
         final_energy_per_site=final_energy / float(lattice.N),
+        c_index_values=c_index_values,
+        mean_c_index_window=mean_c_win,
+        sd_c_index_window=sd_c_win,
     )

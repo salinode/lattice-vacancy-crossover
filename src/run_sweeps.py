@@ -165,6 +165,8 @@ def _run_single_job(
         "msd_loglog_slope": diff.msd_loglog_slope,
         "is_diffusive": int(diff.is_diffusive),
         "C_index": c_index,
+        "C_index_window_mean": sim.mean_c_index_window,
+        "C_index_window_sd": sim.sd_c_index_window,
         "mean_zv": mean_zv,
         "n_clusters": clust.n_clusters,
         "largest_cluster_size": clust.largest_cluster_size,
